@@ -3,6 +3,8 @@
 #include <nRF24L01.h>
 #include <RF24.h>
 #include <Servo.h>
+
+//Create Servo element
 Servo PUSH;
 
 //ServoValues
@@ -27,7 +29,7 @@ int lysLimit = 650;
 RF24 radio(9, 8);  // CE, CSN
 
 //address through which two modules communicate.
-const byte address[6] = "00001";
+const byte address[6] = "69420";
 
 void setup(){
   pinMode(BUZZER,   OUTPUT);
@@ -65,7 +67,7 @@ void loop(){
     }
     
     //Send message to receiver
-    radio.write(&lysSensorValue, sizeof(lysSensorValue));
+    radio.write(lysSensorValue, sizeof(lysSensorValue));
     radio.stopListening();             //Set module as transmitter
     PUSH.write(PUSHNow);
   }
