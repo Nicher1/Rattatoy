@@ -31,23 +31,23 @@ void setup(){
   PUSH.write(PUSHDefault);
 }
 void loop(){
-lysSensorValue = analogRead(lysSensorPin);
-
-if (lysSensorValue > lysLimit){
-  digitalWrite(BUZZER, LOW);
-  digitalWrite(GreenLED, LOW);
-  PUSH.write(PUSHDefault);
+  lysSensorValue = analogRead(lysSensorPin);
+  
+  if (lysSensorValue > lysLimit){
+    digitalWrite(BUZZER, LOW);
+    digitalWrite(GreenLED, LOW);
+    PUSH.write(PUSHDefault);
+  }
+  radio.openWritingPipe(address);    //set the address    
+  if (lysSensorValue <= lysLimit){
+    digitalWrite(BUZZER, HIGH);
+    digitalWrite(GreenLED, HIGH);
+    //Send message to receiver
+    
+    radio.write(&lysSensorValue, sizeof(lysSensorValue));
+    radio.stopListening();             //Set module as transmitter
+    PUSH.write(PUSHNow);
   }
   
-if (lysSensorValue <= lysLimit){
-  //Send message to receiver
-  //radio.openWritingPipe(address);    //set the address
-  //radio.write(&lysSensorValue, sizeof(lysSensorValue));
-  //radio.stopListening();             //Set module as transmitter
-  PUSH.write(PUSHNow);
-  digitalWrite(BUZZER, HIGH);
-  digitalWrite(GreenLED, HIGH);
-  }
-
-Serial.println(lysSensorValue);
+  Serial.println(lysSensorValue);
 }
