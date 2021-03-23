@@ -18,7 +18,7 @@ RF24 radio(9, 8);  // CE, CSN
 
 //address through which two modules communicate.
 const byte address[6] = "00001";
-
+//void setup()
 void setup()
 {
   while (!Serial);
