@@ -8,8 +8,12 @@ Servo PUSH;
 #define PUSHDefault 90
 #define PUSHNow 20
 
-#define BUZZER 3   //PIN 4 NÅR VI ER DONE!!!!!!!!
+#define BUZZER 4   //PIN 4 NÅR VI ER DONE!!!!!!!!
 #define GreenLED 5
+
+int timer  = 0;
+int timer2 = 0;
+int period = 200;
 
 int lysSensorPin = A0;
 int lysSensorValue = 0;
@@ -32,16 +36,27 @@ void setup(){
 }
 void loop(){
   lysSensorValue = analogRead(lysSensorPin);
+  radio.openWritingPipe(address);    //set the address  
   
   if (lysSensorValue > lysLimit){
     digitalWrite(BUZZER, LOW);
     digitalWrite(GreenLED, LOW);
     PUSH.write(PUSHDefault);
+    timer2 = millis();
   }
-  radio.openWritingPipe(address);    //set the address    
+    
   if (lysSensorValue <= lysLimit){
+    timer = millis() - timer2;
+    
+    if (timer <= period){
     digitalWrite(BUZZER, HIGH);
     digitalWrite(GreenLED, HIGH);
+    }
+    
+    if (timer > period){
+    digitalWrite(BUZZER, LOW);
+    digitalWrite(GreenLED, LOW);
+    }
     
     //Send message to receiver
     radio.write(&lysSensorValue, sizeof(lysSensorValue));
