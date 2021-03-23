@@ -5,9 +5,9 @@
 #include <Stepper.h> // Include the header file
 
 // change this to the number of steps on your motor
-int STEPS = 32
-int step1 = 6
-int step2 = 7
+int STEPS = 32;
+int step1 = 6;
+int step2 = 7;
 
 // create an instance of the stepper class using the steps and pins
 Stepper stepper(STEPS, 3, 5, 4, 6);
@@ -17,7 +17,7 @@ int val = 0;
 RF24 radio(9, 8);  // CE, CSN
 
 //address through which two modules communicate.
-const byte address[6] = "00001";
+const byte address[6] = "69420";
 //void setup()
 void setup()
 {
@@ -42,7 +42,7 @@ void loop()
   //Read the data if available in buffer
   if (radio.available())
   {
-    char text[32] = {0};
+    char text = {0};
     radio.read(&text, sizeof(text));
     Serial.println(text);
   }
