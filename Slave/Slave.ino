@@ -8,7 +8,7 @@ Servo PUSH;
 #define PUSHDefault 90
 #define PUSHNow 20
 
-#define BUZZER 7
+#define BUZZER 3   //PIN 4 NÅR VI ER DONE!!!!!!!!
 #define GreenLED 5
 
 int lysSensorPin = A0;
@@ -42,8 +42,8 @@ void loop(){
   if (lysSensorValue <= lysLimit){
     digitalWrite(BUZZER, HIGH);
     digitalWrite(GreenLED, HIGH);
-    //Send message to receiver
     
+    //Send message to receiver
     radio.write(&lysSensorValue, sizeof(lysSensorValue));
     radio.stopListening();             //Set module as transmitter
     PUSH.write(PUSHNow);
