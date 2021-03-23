@@ -8,12 +8,12 @@ Servo PUSH;
 #define PUSHDefault 90
 #define PUSHNow 20
 
-#define BUZZER 4   //PIN 4 NÅR VI ER DONE!!!!!!!!
+#define BUZZER 3   //PIN 4 NÅR VI ER DONE!!!!!!!!
 #define GreenLED 5
 
 int timer  = 0;
 int timer2 = 0;
-int period = 200;
+int period = 250;
 
 int lysSensorPin = A0;
 int lysSensorValue = 0;
@@ -55,7 +55,6 @@ void loop(){
     
     if (timer > period){
     digitalWrite(BUZZER, LOW);
-    digitalWrite(GreenLED, LOW);
     }
     
     //Send message to receiver
