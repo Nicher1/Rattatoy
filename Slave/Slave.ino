@@ -31,11 +31,11 @@ void setup(){
 void loop(){
   //radio.openReadingPipe(address);
   if (stepper.distanceToGo() == 0){
-    delay(500);
-    stepper.moveTo(pos);
     pos = pos + 133.3333;
     X = 0;
+    delay(500);
   }
+  stepper.moveTo(pos);
   stepper.run();
   radio.stopListening();
   
