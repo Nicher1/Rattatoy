@@ -20,6 +20,8 @@ int timer  = 0;
 int timer2 = 0;
 int period = 250;
 
+int X = 6;
+
 //Light sesor pins & values
 int lysSensorPin = A0;
 int lysSensorValue = 0;
@@ -28,14 +30,12 @@ int lysLimit = 650;
 //create an RF24 object
 RF24 radio(7, 8);  // CE, CSN
 
-//address through which two modules communicate.
-const byte address[6] = "69420";
-
 void setup(){
   pinMode(BUZZER,   OUTPUT);
   pinMode(GreenLED, OUTPUT);
   
   radio.begin();
+  radio.setChannel(60);
   
   Serial.begin(9600);
   
@@ -45,13 +45,14 @@ void setup(){
 
 void loop(){
   lysSensorValue = analogRead(lysSensorPin);
-  radio.openWritingPipe(address);    //set the address  
+  radio.openWritingPipe(0,0xF0F0F0F0AALL);
   
-  if (lysSensorValue > lysLimit){
+  if (lysSensorValue > lysLimit && X > 0){
     digitalWrite(BUZZER, LOW);
     digitalWrite(GreenLED, LOW);
     PUSH.write(PUSHDefault);
     timer2 = millis();
+    X = X - 1;
   }
     
   if (lysSensorValue <= lysLimit){
@@ -68,7 +69,7 @@ void loop(){
     
     //Send message to receiver
     radio.write(lysSensorValue, sizeof(lysSensorValue));
-    radio.stopListening();             //Set module as transmitter
+    radio.stop();             //Set module as transmitter
     PUSH.write(PUSHNow);
   }
   
