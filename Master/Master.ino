@@ -1,4 +1,4 @@
-//Include Libraries
+//Inkludere Libraries
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
@@ -7,7 +7,7 @@
 //Create Servo element
 Servo PUSH;
 
-//ServoValues
+//Servo values
 #define PUSHDefault 90
 #define PUSHNow 20
 
@@ -20,7 +20,7 @@ int timer  = 0;
 int timer2 = 0;
 int period = 250;
 
-int X = 6;
+int X = 6; //Antal af nødder der er tilbage i dispenseren
 
 //Light sesor pins & values
 int lysSensorPin = A0;
@@ -44,10 +44,10 @@ void setup(){
 }
 
 void loop(){
-  lysSensorValue = analogRead(lysSensorPin);
+  lysSensorValue = analogRead(lysSensorPin); //Sætter LysSensorValue til LDR værdien
   radio.openWritingPipe(0,0xF0F0F0F0AALL);
   
-  if (lysSensorValue > lysLimit && X > 0){
+  if (lysSensorValue > lysLimit && X > 0){   
     digitalWrite(BUZZER, LOW);
     digitalWrite(GreenLED, LOW);
     PUSH.write(PUSHDefault);

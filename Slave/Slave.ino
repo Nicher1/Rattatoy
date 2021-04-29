@@ -44,7 +44,6 @@ void refreshLCD(){
 
 void loop(){
   refreshLCD(); 
-  //radio.openReadingPipe(address);
   if (stepper.distanceToGo() == 0){
     pos = pos + 133.3333;
     X = 0;
