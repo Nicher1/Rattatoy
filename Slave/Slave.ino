@@ -17,7 +17,7 @@ float pos = 133.3333;
 const byte address[6] = "69420";
 RF24 radio(7, 8);  // CE, CSN
 
-void setup(){
+void setup(){ 
   lcd.init();
   lcd.backlight();
   
@@ -28,8 +28,22 @@ void setup(){
   stepper.setAcceleration(1000);
 }
 
+void refreshLCD(){
+  if (NutsLeft > 0){
+    lcd.setCursor(0, 0);
+    lcd.print("Antal noedder:");
+    lcd.setCursor(0, 15);
+    lcd.print(NutsLeft);
+  }
+  if (NutsLeft == 0){
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Påfyld noedder");
+  }
+}
+
 void loop(){
-  //radio.openReadingPipe(address);
+  refreshLCD(); 
   if (stepper.distanceToGo() == 0){
     pos = pos + 133.3333;
     X = 0;
@@ -44,8 +58,4 @@ void loop(){
     X = 1;
   }
 
-  lcd.setCursor(0, 0);
-  lcd.print("Antal Jordnodder");
-  lcd.setCursor(0, 1);
-  lcd.print(NutsLeft);
 }
