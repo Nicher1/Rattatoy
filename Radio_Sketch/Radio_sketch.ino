@@ -11,7 +11,7 @@ const byte address[] [6] = {"Fishy", "Tacos"};
 void setup() {
   radio.begin();
   radio.openReadingPipe(1, address[0]);
-  radio.setPALevel(RF24_PA_MAX);
+  radio.setPALevel(RF24_PA_LOW);
   radio.setDataRate(RF24_1MBPS);
   radio.setChannel(110);
   Serial.begin(9600);
