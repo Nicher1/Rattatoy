@@ -29,24 +29,29 @@ int lysLimit = 650;
 RF24 radio(7, 8);  // CE, CSN
 
 //address through which two modules communicate.
-const byte address[6] = "69420";
+byte address[][6] = {"Fishy", "Tacos"};
 
 void setup(){
+  //radio.startListening();
   pinMode(BUZZER,   OUTPUT);
   pinMode(GreenLED, OUTPUT);
   
   radio.begin();
+  radio.openWritingPipe(address[0]);
+  radio.setPALevel(RF24_PA_MAX);
+  radio.setDataRate(RF24_1MBPS);
+  radio.setChannel(110);
   
   Serial.begin(9600);
-  
   PUSH.attach(6);
   PUSH.write(PUSHDefault);
 }
 
 void loop(){
-  lysSensorValue = analogRead(lysSensorPin);
-  radio.openWritingPipe(address);    //set the address  
+  radio.stopListening();
+  lysSensorValue = analogRead(lysSensorPin); 
   
+ 
   if (lysSensorValue > lysLimit){
     digitalWrite(BUZZER, LOW);
     digitalWrite(GreenLED, LOW);
@@ -56,10 +61,11 @@ void loop(){
     
   if (lysSensorValue <= lysLimit){
     timer = millis() - timer2;
-    
+    radio.write(&(String)lysSensorValue, sizeof(lysSensorValue));
     if (timer <= period){
-    digitalWrite(BUZZER, HIGH);
-    digitalWrite(GreenLED, HIGH);
+      digitalWrite(BUZZER, HIGH);
+      digitalWrite(GreenLED, HIGH);
+      Serial.println(lysSensorValue);
     }
     
     if (timer > period){
@@ -67,10 +73,9 @@ void loop(){
     }
     
     //Send message to receiver
-    radio.write(lysSensorValue, sizeof(lysSensorValue));
-    radio.stopListening();             //Set module as transmitter
+    
+                //Set module as transmitter
     PUSH.write(PUSHNow);
   }
   
-  Serial.println(lysSensorValue);
 }
