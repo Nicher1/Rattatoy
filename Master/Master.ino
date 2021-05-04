@@ -20,18 +20,18 @@ int timer  = 0;
 int timer2 = 0;
 int period = 250;
 
-int X = 6; //Antal af nødder der er tilbage i dispenseren
+int X = 7; //Antal af nødder der er tilbage i dispenseren
 
 //Light sesor pins & values
 int lysSensorPin = A0;
 byte lysSensorValue = 0;
-int lysLimit = 100;
+int lysLimit = 120;
 
 //create an RF24 object
 RF24 radio(7, 8);  // CE, CSN
 
 //address through which two modules communicate.
-byte address[][6] = {"Fishy", "Tacos"};
+byte address[6] = {"00005"};
 
 void setup(){
   //radio.startListening();
@@ -39,7 +39,7 @@ void setup(){
   pinMode(GreenLED, OUTPUT);
 
   radio.begin();
-  radio.openWritingPipe(address[0]);
+  radio.openWritingPipe(address);
   radio.setPALevel(RF24_PA_LOW);
   radio.setDataRate(RF24_1MBPS);
   radio.setChannel(110);
@@ -51,8 +51,8 @@ void setup(){
 
 void loop(){
   radio.stopListening();
-  lysSensorValue = map(analogRead(lysSensorPin),-2147483648,2147483647,-128,127);
-
+  lysSensorValue = analogRead(lysSensorPin)/4;
+  Serial.println(lysSensorValue);
 
   if (lysSensorValue > lysLimit && X > 0){
     digitalWrite(BUZZER, LOW);
@@ -66,7 +66,7 @@ void loop(){
     radio.begin();
     timer = millis() - timer2;
     radio.write(&lysSensorValue, sizeof(lysSensorValue));
-    Serial.println(lysSensorValue);
+    delay(10);
     if (timer <= period){
       digitalWrite(BUZZER, HIGH);
       digitalWrite(GreenLED, HIGH);
