@@ -31,7 +31,7 @@ int lysLimit = 120;
 RF24 radio(7, 8);  // CE, CSN
 
 //address through which two modules communicate.
-byte address[6] = {"00005"};
+byte address[6] = {"69420"};
 
 void setup(){
   //radio.startListening();
