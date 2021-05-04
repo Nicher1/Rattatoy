@@ -26,8 +26,8 @@ void setup(){
   lcd.createChar(2,oe);
   Serial.begin(9600);
   
-  stepper.setMaxSpeed(100);
-  stepper.setAcceleration(25);
+  stepper.setMaxSpeed(200);
+  stepper.setAcceleration(40);
   radio.begin();
   radio.openReadingPipe(1, address);
   radio.setPALevel(RF24_PA_LOW);
