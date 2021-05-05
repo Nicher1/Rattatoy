@@ -20,12 +20,16 @@ int timer  = 0;
 int timer2 = 0;
 int period = 250;
 
-int X = 7; //Antal af nødder der er tilbage i dispenseren
+int X = 5; //Antal af nødder der er tilbage i dispenseren
 
 //Light sesor pins & values
 int lysSensorPin = A0;
-byte lysSensorValue = 0;
+byte lysSensorValue;
 int lysLimit = 120;
+int lysSensorValuePre; 
+int lysTrig;
+const int lysChange = 5;
+
 
 //create an RF24 object
 RF24 radio(7, 8);  // CE, CSN
@@ -51,8 +55,16 @@ void setup(){
 
 void loop(){
   radio.stopListening();
-  lysSensorValue = analogRead(lysSensorPin)/4;
-  Serial.println(lysSensorValue);
+  lysSensorValue = (analogRead(lysSensorPin) / 4) -1;
+  lysTrig = lysSensorValue - lysSensorValuePre;
+
+  if (lysTrig >= lysChange){
+    Serial.println(lysSensorValue);
+  }
+
+  if (lysTrig <= -lysChange){
+    Serial.println(lysSensorValue);
+  }
 
   if (lysSensorValue > lysLimit && X > 0){
     digitalWrite(BUZZER, LOW);
@@ -80,5 +92,5 @@ void loop(){
     //Send message to receiver
     PUSH.write(PUSHNow);
   }
-
+  lysSensorValuePre = lysSensorValue;
 }
