@@ -13,9 +13,10 @@ byte aa[8] {B00100,B00000,B01110,B00001,B01111,B10001,B01111};  // "å" til lcd
 byte oe[8] {B00000,B00001,B01110,B10011,B10101,B11001,B01110};  // "ø" til lcd
 
 byte lysSensorValue = 1;
-int NutsLeft = 50;
+int NutsLeft = 5;
 
-int pos = 133;
+int pos = 266;
+int addPos = 266;
 byte address[6] = {"69420"};
 RF24 radio(7, 8);  // CE, CSN
 
@@ -23,18 +24,47 @@ void setup(){
   lcd.init();
   lcd.backlight();
 
+  refreshLCD();
+  
   lcd.createChar(1,aa);
   lcd.createChar(2,oe);
   Serial.begin(9600);
   
-  stepper.setMaxSpeed(200);
-  stepper.setAcceleration(50);
+  stepper.setMaxSpeed(800);
+  stepper.setAcceleration(400);
   
   radio.begin();
   radio.openReadingPipe(1, address);
   radio.setPALevel(RF24_PA_LOW);
   radio.setDataRate(RF24_1MBPS);
   radio.setChannel(110);
+}
+
+void loop(){ 
+  radio.startListening();
+  
+  if (radio.available()){
+    radio.read(&lysSensorValue,sizeof(lysSensorValue));
+    //Serial.println(lysSensorValue);
+    radio.stopListening();
+  }
+  
+  stepper.run();
+  stepper.moveTo(pos);  
+  
+  //Serial.println(pos);
+  //Serial.println(stepper.distanceToGo());
+  //Serial.println(NutsLeft);
+
+  if (stepper.distanceToGo() == 0 && NutsLeft != 0){
+    pos = pos + addPos;
+    NutsLeft = NutsLeft - 1;
+    refreshLCD();
+    delay(500);
+  }
+  if (NutsLeft == 0){
+    pos = addPos * 5;
+  }
 }
 
 void refreshLCD(){
@@ -61,28 +91,5 @@ void refreshLCD(){
     lcd.write(byte(2));
     lcd.setCursor(9,0);
     lcd.print("dder:");
-  }
-}
-
-void loop(){ 
-  radio.startListening();
-  refreshLCD();
-  
-  if (radio.available()){
-    radio.read(&lysSensorValue,sizeof(lysSensorValue));
-    //Serial.println(lysSensorValue);
-    radio.stopListening();
-  }
-  
-  stepper.run();
-  stepper.moveTo(pos);  
-  
-  Serial.println(pos);
-  Serial.println(stepper.distanceToGo());
-  Serial.println(NutsLeft);
-
-  if (stepper.distanceToGo() == 0 && NutsLeft != 0){
-    pos = pos + 133;
-    NutsLeft = NutsLeft - 1;
   }
 }
