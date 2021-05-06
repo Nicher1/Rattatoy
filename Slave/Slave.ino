@@ -40,12 +40,13 @@ void setup(){
 void loop(){ 
   radio.startListening();
   radio.read(&ldrValue,sizeof(ldrValue));
+    
   Serial.println(ldrValue);
 
   if (ldrValue == 1 && nutsLeft != 0){
     stepper.run();
     stepper.moveTo(pos);
-
+    
     //Serial.println(pos);
     //Serial.println(stepper.distanceToGo());
     //Serial.println(nutsLeft);
@@ -54,10 +55,9 @@ void loop(){
       pos = pos + addPos;
       nutsLeft = nutsLeft - 1;
       refreshLCD();
-      delay(1000);
-      ldrValue = 0;
+      delay(5000);
     }
-  
+    
     if (nutsLeft == 0){
       pos = addPos * 5;
     }
