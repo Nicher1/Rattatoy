@@ -12,7 +12,7 @@ Servo PUSH;
 #define PUSHNow 20
 
 //Sensory output pins
-#define BUZZER 3   //PIN 4 NÅR VI ER DONE!!!!!!!!
+#define BUZZER 4   //PIN 4 NÅR VI ER DONE!!!!!!!!
 #define GreenLED 5
 
 //Values for timing
@@ -46,8 +46,7 @@ void setup(){
 }
 
 void sendSignals(){
-  int tal = 1;
-  radio.write(&tal, sizeof(tal));
+  radio.write(&ldrValue, sizeof(ldrValue));
 }
 
 
@@ -61,26 +60,27 @@ void loop(){
     digitalWrite(GreenLED, LOW);
     PUSH.write(PUSHDefault);
     timer2 = millis();
-    ldrValue = false;
+   
   }
-
+ 
   if (lysSensorValue <= lysLimit){
     timer = millis() - timer2;
     if (timer <= period){
       digitalWrite(BUZZER, HIGH);
-      digitalWrite(GreenLED, HIGH); 
+      digitalWrite(GreenLED, HIGH);  
     }
 
     if (timer > period){
-    digitalWrite(BUZZER, LOW);
+      digitalWrite(BUZZER, LOW);
     }
     
-    if (timer > period2){
-    ldrValue = true;  
-    }
-
+    ldrValue = 1;   
+    
     //Send message to receiver
     PUSH.write(PUSHNow);
+  }
+  else if (lysSensorValue >= lysLimit){
+    ldrValue =0;
   }
   
 }
