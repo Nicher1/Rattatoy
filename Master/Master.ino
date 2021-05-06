@@ -19,78 +19,68 @@ Servo PUSH;
 int timer  = 0;
 int timer2 = 0;
 int period = 250;
-
-int X = 5; //Antal af nødder der er tilbage i dispenseren
+int period2 = 2000;
 
 //Light sesor pins & values
 int lysSensorPin = A0;
-byte lysSensorValue;
+byte lysSensorValue = 0;
 int lysLimit = 120;
-int lysSensorValuePre; 
-int lysTrig;
-const int lysChange = 5;
-
+int ldrValue = 0;
 
 //create an RF24 object
 RF24 radio(7, 8);  // CE, CSN
 
 //address through which two modules communicate.
-byte address[6] = {"69420"};
+byte address[6] = {"willy"};
 
 void setup(){
   //radio.startListening();
   pinMode(BUZZER,   OUTPUT);
   pinMode(GreenLED, OUTPUT);
-
   radio.begin();
   radio.openWritingPipe(address);
-  radio.setPALevel(RF24_PA_LOW);
-  radio.setDataRate(RF24_1MBPS);
-  radio.setChannel(110);
-
+  radio.stopListening();
   Serial.begin(9600);
   PUSH.attach(6);
   PUSH.write(PUSHDefault);
 }
 
+void sendSignals(){
+  int tal = 1;
+  radio.write(&tal, sizeof(tal));
+}
+
+
 void loop(){
-  radio.stopListening();
-  lysSensorValue = (analogRead(lysSensorPin) / 4) -1;
-  lysTrig = lysSensorValue - lysSensorValuePre;
+  sendSignals();
+  lysSensorValue = analogRead(lysSensorPin)/4;
+  Serial.println(lysSensorValue);
 
-  if (lysTrig >= lysChange){
-    Serial.println(lysSensorValue);
-  }
-
-  if (lysTrig <= -lysChange){
-    Serial.println(lysSensorValue);
-  }
-
-  if (lysSensorValue > lysLimit && X > 0){
+  if (lysSensorValue > lysLimit){
     digitalWrite(BUZZER, LOW);
     digitalWrite(GreenLED, LOW);
     PUSH.write(PUSHDefault);
     timer2 = millis();
-    //X = X - 1;
+    ldrValue = false;
   }
 
   if (lysSensorValue <= lysLimit){
-    radio.begin();
     timer = millis() - timer2;
-    radio.write(&lysSensorValue, sizeof(lysSensorValue));
-    delay(10);
     if (timer <= period){
       digitalWrite(BUZZER, HIGH);
-      digitalWrite(GreenLED, HIGH);
-      
+      digitalWrite(GreenLED, HIGH); 
     }
 
     if (timer > period){
     digitalWrite(BUZZER, LOW);
     }
+    
+    if (timer > period2){
+    ldrValue = true;  
+    }
 
     //Send message to receiver
     PUSH.write(PUSHNow);
   }
-  lysSensorValuePre = lysSensorValue;
+  
 }
