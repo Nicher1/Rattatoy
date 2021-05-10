@@ -18,8 +18,13 @@ Servo PUSH;
 //Values for timing
 int timer  = 0;
 int timer2 = 0;
-int period = 250;
-int period2 = 2000;
+int darkTime = 0;
+int pauseTime = 0;
+
+int x = 0;
+
+int period = 10000;
+int period2 = 1500;
 
 //Light sesor pins & values
 int lysSensorPin = A0;
@@ -45,42 +50,46 @@ void setup(){
   PUSH.write(PUSHDefault);
 }
 
-void sendSignals(){
-  int tal = 1;
-  radio.write(&tal, sizeof(tal));
-}
-
-
 void loop(){
-  sendSignals();
   lysSensorValue = analogRead(lysSensorPin)/4;
-  Serial.println(lysSensorValue);
-
+  //Serial.println(lysSensorValue);
+  timer = millis() - pauseTime;
+  
   if (lysSensorValue > lysLimit){
     digitalWrite(BUZZER, LOW);
     digitalWrite(GreenLED, LOW);
     PUSH.write(PUSHDefault);
-    timer2 = millis();
-    ldrValue = false;
+    ldrValue = false;  
+    Serial.println(timer);
   }
-
-  if (lysSensorValue <= lysLimit){
-    timer = millis() - timer2;
-    if (timer <= period){
+  if (timer < period){
+    darkTime = millis();
+  }
+  if (timer >= period && lysSensorValue <= lysLimit){
+    timer2 = millis() - darkTime;
+    radio.write(&ldrValue, sizeof(ldrValue));
+    //Serial.println(ldrValue);
+    Serial.println(timer2);
+    pauseTime = millis();
+    
+    if (timer2 <= period2 / 6){
       digitalWrite(BUZZER, HIGH);
       digitalWrite(GreenLED, HIGH); 
     }
-
-    if (timer > period){
-    digitalWrite(BUZZER, LOW);
+    if (timer2 > period2 / 6){
+      digitalWrite(BUZZER, LOW);
     }
-    
-    if (timer > period2){
-    ldrValue = true;  
+    if (timer2 > period2 && timer < 4 * period2){
+      ldrValue = true;
+      pauseTime = millis();
     }
-
-    //Send message to receiver
-    PUSH.write(PUSHNow);
+    if (timer2 > 2 * period2){
+      PUSH.write(PUSHNow);
+    }
+    if (timer2 >= 4 * period2){
+      ldrValue = false;
+      digitalWrite(GreenLED, LOW);
+      PUSH.write(PUSHDefault);
+    }
   }
-  
 }

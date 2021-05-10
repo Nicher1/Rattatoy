@@ -31,7 +31,7 @@ void setup(){
   Serial.begin(9600);
   
   stepper.setMaxSpeed(800);
-  stepper.setAcceleration(400);
+  stepper.setAcceleration(800);
   
   radio.begin();
   radio.openReadingPipe(1, address);
