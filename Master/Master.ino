@@ -21,15 +21,15 @@ int timer2 = 0;
 int darkTime = 0;
 int pauseTime = 0;
 
-int x = 0;
+int x = 1;
 
-int period = 10000;
-int period2 = 1500;
+int period = 10;
+int period2 = 2;
 
 //Light sesor pins & values
 int lysSensorPin = A0;
 byte lysSensorValue = 0;
-int lysLimit = 120;
+int lysLimit = 125;
 int ldrValue = 0;
 
 //create an RF24 object
@@ -53,63 +53,48 @@ void setup(){
 void loop(){
   lysSensorValue = analogRead(lysSensorPin)/4;
   //Serial.println(lysSensorValue);
-  timer = millis() - pauseTime;
+  
+  if (lysSensorValue > lysLimit){
+    timer = millis() / 1000 - pauseTime;
+    darkTime = millis() / 1000;
+  }
+  //Serial.println(ldrValue);
+  //Serial.println(x);
+  //Serial.println();
   
   if (lysSensorValue > lysLimit){
     digitalWrite(BUZZER, LOW);
     digitalWrite(GreenLED, LOW);
     PUSH.write(PUSHDefault);
     ldrValue = false;  
-    Serial.println(timer);
   }
-  if (timer < period){
-    darkTime = millis();
+  //Serial.println(pauseTime);
+  Serial.println(x);
+  if (timer > period){
+    x = 1;
+    pauseTime = millis() / 1000;
   }
-  if (timer >= period && lysSensorValue <= lysLimit){
-    timer2 = millis() - darkTime;
+
+  if (lysSensorValue <= lysLimit && x == 1){
+    timer2 = millis() / 1000 - darkTime;
     radio.write(&ldrValue, sizeof(ldrValue));
     //Serial.println(ldrValue);
-    Serial.println(timer2);
-    pauseTime = millis();
-    
-    if (timer2 <= period2 / 6){
-    timer2 = millis();
-   
-  }
- 
-  if (lysSensorValue <= lysLimit){
-    timer = millis() - timer2;
-    if (timer <= period){
+    if (timer2 < period2 / 2){
       digitalWrite(BUZZER, HIGH);
       digitalWrite(GreenLED, HIGH);  
     }
-    if (timer2 > period2 / 6){
+    if (timer2 > period2 / 2 && timer < 3 * period2){
       digitalWrite(BUZZER, LOW);
-    }
-    if (timer2 > period2 && timer < 4 * period2){
       ldrValue = true;
-      pauseTime = millis();
     }
-    if (timer2 > 2 * period2){
-      PUSH.write(PUSHNow);
-    }
-    if (timer2 >= 4 * period2){
+    if (timer2 > 3 * period2){
       ldrValue = false;
       digitalWrite(GreenLED, LOW);
-      PUSH.write(PUSHDefault);
+      pauseTime = millis() / 1000;
+      PUSH.write(PUSHNow);
+      if (lysSensorValue >= lysLimit - 20){
+        x = 0;
+      }
     }
-  }
-
-    if (timer > period){
-      digitalWrite(BUZZER, LOW);
-    }
-    
-    ldrValue = 1;   
-    
-    //Send message to receiver
-    PUSH.write(PUSHNow);
-  }
-  else if (lysSensorValue >= lysLimit){
-    ldrValue =0;
   }
 }

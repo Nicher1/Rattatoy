@@ -87,6 +87,6 @@ void refreshLCD(){
     lcd.setCursor(8,0);
     lcd.write(byte(2));
     lcd.setCursor(9,0);
-    lcd.print("dder:");
+    lcd.print("dder ");
   }
 }
