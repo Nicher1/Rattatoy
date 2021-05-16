@@ -66,13 +66,14 @@ void loop(){
   // Detect current LDR value compared to LDR limit value
   if (lysSensorValue > lysLimit){
     // Set everything to default setting, if LDR sensor isn't covered
-    timer = millis() / 1000 - pauseTime;
+    timer = millis() / 1000 - pauseTime;        
     darkTime = millis() / 1000;                 // Define variable that shows if stepper is moving
     digitalWrite(BUZZER, LOW);
     digitalWrite(GreenLED, LOW);
     PUSH.write(PUSHDefault);
     ldrValue = false;
   }
+  // When timer over period x is set to 0 & pauseTime reset 
   if (timer > period){
     x = 1;
     pauseTime = millis() / 1000;
@@ -80,20 +81,24 @@ void loop(){
 
   if (lysSensorValue <= lysLimit && x == 1){
     timer2 = millis() / 1000 - darkTime;         // Set timer 2 = time
-    radio.write(&ldrValue, sizeof(ldrValue));
+    radio.write(&ldrValue, sizeof(ldrValue));    // Send ldrValue to slave
+    // Buzzer & LED on when timer2 under 1/2 period2
     if (timer2 < period2 / 2){
       digitalWrite(BUZZER, HIGH);
       digitalWrite(GreenLED, HIGH);
     }
+    // Buzzer off & ldrValue true when timer 2 between 1/2 & 3 period2
     if (timer2 > period2 / 2 && timer < 3 * period2){
       digitalWrite(BUZZER, LOW);
       ldrValue = true;
     }
+    // ldrValue false & LED off when timer2 over 3 period2
     if (timer2 > 3 * period2){
       ldrValue = false;
       digitalWrite(GreenLED, LOW);
-      pauseTime = millis() / 1000;
-      PUSH.write(PUSHNow);
+      pauseTime = millis() / 1000;               // pauseTime reset
+      PUSH.write(PUSHNow);                       // Stepper push ball away
+      // x set to 0 when lysSensorValue nears lyslimit
       if (lysSensorValue >= lysLimit - 20){
         x = 0;
       }
