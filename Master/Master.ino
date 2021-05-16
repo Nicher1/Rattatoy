@@ -59,13 +59,15 @@ void setup(){
 }
 
 void loop(){
+  // Set variable to current LDR-value
   lysSensorValue = analogRead(lysSensorPin)/4;
 
-  if (lysSensorValue > lysLimit){
-    timer = millis() / 1000 - pauseTime;
-    darkTime = millis() / 1000;
 
+  // Detect current LDR value compared to LDR limit value
   if (lysSensorValue > lysLimit){
+    // Set everything to default setting, if LDR sensor isn't covered
+    timer = millis() / 1000 - pauseTime;
+    darkTime = millis() / 1000;                 // Define variable that shows if stepper is moving
     digitalWrite(BUZZER, LOW);
     digitalWrite(GreenLED, LOW);
     PUSH.write(PUSHDefault);
@@ -77,7 +79,7 @@ void loop(){
   }
 
   if (lysSensorValue <= lysLimit && x == 1){
-    timer2 = millis() / 1000 - darkTime;
+    timer2 = millis() / 1000 - darkTime;         // Set timer 2 = time
     radio.write(&ldrValue, sizeof(ldrValue));
     if (timer2 < period2 / 2){
       digitalWrite(BUZZER, HIGH);
