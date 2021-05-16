@@ -12,21 +12,22 @@ LiquidCrystal_I2C lcd = LiquidCrystal_I2C(0x27, 16, 2);
 byte aa[8] {B00100,B00000,B01110,B00001,B01111,B10001,B01111};  // "å" til lcd
 byte oe[8] {B00000,B00001,B01110,B10011,B10101,B11001,B01110};  // "ø" til lcd
 
-int ldrValue = 0;
-int nutsLeft = 5;
+int ldrValue = 0; // Værdi til at gemme det signal der kommer fra Master
+int nutsLeft = 5; // Antallet af nødder der er tilbage i dispenseren
 
-int pos = 266;
-int addPos = 266;
+int pos = 266; // Positionen stepperen skal gå til 
+int addPos = 266; // Til at opdatere pos til næste gang
 byte address[6] = {"willy"};
 RF24 radio(7, 8);  // CE, CSN
 
 void setup(){ 
+// lcd setup
   lcd.init();
   lcd.backlight();
 
   refreshLCD();
   
-  lcd.createChar(1,aa);
+  lcd.createChar(1,aa); //
   lcd.createChar(2,oe);
   Serial.begin(9600);
   
